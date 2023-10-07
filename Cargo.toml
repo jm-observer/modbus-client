@@ -1,10 +1,23 @@
 [package]
-name = "rust-lib"
+name = "modbus-client"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-log = "0.4.17"
-custom-utils = "0.10.14"
+log = "0.4.20"
+easy-modbus = "0.0.5"
+tokio-util = "0.7.8"
+bytes = "1.4.0"
+
+
+[patch.crates-io]
+easy-modbus = {path = "../my-easy-modbus"}
+
+
+[dev-dependencies]
+tokio = {version = "1.32.0", features = ["full"]}
+tokio-serial = "5.4.4"
+
+
