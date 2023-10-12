@@ -1,62 +1,41 @@
 use easy_modbus::*;
 mod codec;
 
+#[derive(Clone)]
 pub enum Request {
-    ReadCoils(
-        Head,
-        ReadCoilsRequest,
-        Option<Result<ReadCoilsResponse, ExceptionResponse>>,
-    ),
-    ReadDiscreteInputs(
-        Head,
-        ReadDiscreteInputsRequest,
-        Option<Result<ReadDiscreteInputsResponse, ExceptionResponse>>,
-    ),
+    ReadCoils(Head, ReadCoilsRequest),
+    ReadDiscreteInputs(Head, ReadDiscreteInputsRequest),
     ReadMultipleHoldingRegisters(
         Head,
-        ReadMultipleHoldingRegistersRequest,
-        Option<Result<ReadMultipleHoldingRegistersResponse, ExceptionResponse>>,
+        ReadMultipleHoldingRegistersRequest
     ),
-    ReadInputRegisters(
-        Head,
-        ReadInputRegistersRequest,
-        Option<Result<ReadInputRegistersResponse, ExceptionResponse>>,
-    ),
-    WriteSingleCoil(
-        Head,
-        WriteSingleCoilRequest,
-        Option<Result<WriteSingleCoilResponse, ExceptionResponse>>,
-    ),
+    ReadInputRegisters(Head, ReadInputRegistersRequest),
+    WriteSingleCoil(Head, WriteSingleCoilRequest),
     WriteSingleHoldingRegister(
         Head,
-        WriteSingleHoldingRegisterRequest,
-        Option<Result<WriteSingleHoldingRegisterResponse, ExceptionResponse>>,
+        WriteSingleHoldingRegisterRequest
     ),
-    WriteMultipleCoils(
-        Head,
-        WriteMultipleCoilsRequest,
-        Option<Result<WriteMultipleCoilsResponse, ExceptionResponse>>,
-    ),
+    WriteMultipleCoils(Head, WriteMultipleCoilsRequest),
     WriteMultipleHoldingRegisters(
         Head,
-        WriteMultipleHoldingRegistersRequest,
-        Option<Result<WriteMultipleHoldingRegistersResponse, ExceptionResponse>>,
-    ),
+        WriteMultipleHoldingRegistersRequest
+    )
 }
 
 impl Request {
     pub fn head(&self) -> &Head {
         match self {
-            Request::ReadCoils(head, _, _) => head,
-            Request::ReadDiscreteInputs(head, _, _) => head,
-            Request::ReadMultipleHoldingRegisters(head, _, _) => head,
-            Request::ReadInputRegisters(head, _, _) => head,
-            Request::WriteSingleCoil(head, _, _) => head,
-            Request::WriteSingleHoldingRegister(head, _, _) => head,
-            Request::WriteMultipleCoils(head, _, _) => head,
-            Request::WriteMultipleHoldingRegisters(head, _, _) => head,
+            Request::ReadCoils(head, _) => head,
+            Request::ReadDiscreteInputs(head, _) => head,
+            Request::ReadMultipleHoldingRegisters(head, _) => head,
+            Request::ReadInputRegisters(head, _) => head,
+            Request::WriteSingleCoil(head, _) => head,
+            Request::WriteSingleHoldingRegister(head, _) => head,
+            Request::WriteMultipleCoils(head, _) => head,
+            Request::WriteMultipleHoldingRegisters(head, _) => head
         }
     }
+
     /// Create a TCP frame
     ///
     /// A Modbus variant used for communications over TCP/IP networks.
@@ -76,7 +55,8 @@ impl Request {
 
     /// Create a RTU frame
     ///
-    /// Used in serial communication, and is the most common implementation available for Modbus.
+    /// Used in serial communication, and is the most common
+    /// implementation available for Modbus.
     ///
     /// # Examples
     ///
@@ -103,11 +83,21 @@ impl Request {
     /// use easy_modbus::Frame;
     /// let request = Frame::tcp().read_coils_request(0x01, 0x02, 0x08);
     /// ```
-    pub fn read_coils_request(unit_id: u8, first_address: u16, number: u16) -> Request {
+    pub fn read_coils_request(
+        unit_id: u8,
+        first_address: u16,
+        number: u16
+    ) -> Request {
         let function = Function::ReadCoils;
-        let request_body = ReadCoilsRequest::new(first_address, number);
-        let head = Self::init_head(unit_id, function, request_body.len(), false);
-        Request::ReadCoils(head, request_body, None)
+        let request_body =
+            ReadCoilsRequest::new(first_address, number);
+        let head = Self::init_head(
+            unit_id,
+            function,
+            request_body.len(),
+            false
+        );
+        Request::ReadCoils(head, request_body)
     }
 
     /// Create a read discrete Request (Function Code: 0x02)
@@ -122,14 +112,26 @@ impl Request {
     /// use easy_modbus::Frame;
     /// let request = Frame::tcp().read_discrete_request(0x0B, 0x007A, 0x001C);
     /// ```
-    pub fn read_discrete_request(&self, unit_id: u8, first_address: u16, number: u16) -> Request {
+    pub fn read_discrete_request(
+        &self,
+        unit_id: u8,
+        first_address: u16,
+        number: u16
+    ) -> Request {
         let function = Function::ReadDiscreteInputs;
-        let request_body = ReadDiscreteInputsRequest::new(first_address, number);
-        let head = Self::init_head(unit_id, function, request_body.len(), false);
-        Request::ReadDiscreteInputs(head, request_body, None)
+        let request_body =
+            ReadDiscreteInputsRequest::new(first_address, number);
+        let head = Self::init_head(
+            unit_id,
+            function,
+            request_body.len(),
+            false
+        );
+        Request::ReadDiscreteInputs(head, request_body)
     }
 
-    /// Create a read multiple holding registers request (Function Code: 0x03)
+    /// Create a read multiple holding registers request (Function
+    /// Code: 0x03)
     ///
     /// * `unit_id` -  Server address
     /// * `first_address` - Address of first register to read
@@ -142,15 +144,22 @@ impl Request {
     /// let request = Frame::tcp().read_multiple_holding_registers_request(0x0B, 0x006F, 0x0003);
     /// ```
     pub fn read_multiple_holding_registers_request(
-        &self,
         unit_id: u8,
         first_address: u16,
-        number: u16,
+        number: u16
     ) -> Request {
         let function = Function::ReadMultipleHoldingRegisters;
-        let request_body = ReadMultipleHoldingRegistersRequest::new(first_address, number);
-        let head = Self::init_head(unit_id, function, request_body.len(), false);
-        Request::ReadMultipleHoldingRegisters(head, request_body, None)
+        let request_body = ReadMultipleHoldingRegistersRequest::new(
+            first_address,
+            number
+        );
+        let head = Self::init_head(
+            unit_id,
+            function,
+            request_body.len(),
+            false
+        );
+        Request::ReadMultipleHoldingRegisters(head, request_body)
     }
 
     /// Create a read input registers request (Function Code: 0x04)
@@ -169,19 +178,26 @@ impl Request {
         &self,
         unit_id: u8,
         first_address: u16,
-        number: u16,
+        number: u16
     ) -> Request {
         let function = Function::ReadInputRegisters;
-        let request_body = ReadInputRegistersRequest::new(first_address, number);
-        let head = Self::init_head(unit_id, function, request_body.len(), false);
-        Request::ReadInputRegisters(head, request_body, None)
+        let request_body =
+            ReadInputRegistersRequest::new(first_address, number);
+        let head = Self::init_head(
+            unit_id,
+            function,
+            request_body.len(),
+            false
+        );
+        Request::ReadInputRegisters(head, request_body)
     }
 
     /// Create a write single coil request (Function Code: 0x05)
     ///
     /// * `unit_id` -  Server address
     /// * `address` - Address of coil to write
-    /// * `value` - Value to write. 0 (0x0000) for off, 65,280 (0xFF00) for on.
+    /// * `value` - Value to write. 0 (0x0000) for off, 65,280
+    ///   (0xFF00) for on.
     ///
     /// # Examples
     ///
@@ -189,14 +205,26 @@ impl Request {
     /// use easy_modbus::Frame;
     /// let request = Frame::tcp().write_single_coil_request(0x0B, 0x00BF, 0x0000);
     /// ```
-    pub fn write_single_coil_request(&self, unit_id: u8, address: u16, value: u16) -> Request {
+    pub fn write_single_coil_request(
+        &self,
+        unit_id: u8,
+        address: u16,
+        value: u16
+    ) -> Request {
         let function = Function::WriteSingleCoil;
-        let request_body = WriteSingleCoilRequest::new(address, value);
-        let head = Self::init_head(unit_id, function, request_body.len(), false);
-        Request::WriteSingleCoil(head, request_body, None)
+        let request_body =
+            WriteSingleCoilRequest::new(address, value);
+        let head = Self::init_head(
+            unit_id,
+            function,
+            request_body.len(),
+            false
+        );
+        Request::WriteSingleCoil(head, request_body)
     }
 
-    /// Create a write single holding register request (Function Code: 0x06)
+    /// Create a write single holding register request (Function Code:
+    /// 0x06)
     ///
     /// * `unit_id` -  Server address
     /// * `address` - Address of Holding Register to write
@@ -212,12 +240,18 @@ impl Request {
         &self,
         unit_id: u8,
         address: u16,
-        value: u16,
+        value: u16
     ) -> Request {
         let function = Function::WriteSingleHoldingRegister;
-        let request_body = WriteSingleHoldingRegisterRequest::new(address, value);
-        let head = Self::init_head(unit_id, function, request_body.len(), false);
-        Request::WriteSingleHoldingRegister(head, request_body, None)
+        let request_body =
+            WriteSingleHoldingRegisterRequest::new(address, value);
+        let head = Self::init_head(
+            unit_id,
+            function,
+            request_body.len(),
+            false
+        );
+        Request::WriteSingleHoldingRegister(head, request_body)
     }
 
     /// Create a write multiple coils request (Function Code: 0x0F)
@@ -225,7 +259,8 @@ impl Request {
     /// * `unit_id` -  Server address
     /// * `address` - Address of Holding Register to write
     /// * `coils_number` - Number of coils to write
-    /// * `values` - Coil values. Value of each coil is binary (0 for off, 1 for on).
+    /// * `values` - Coil values. Value of each coil is binary (0 for
+    ///   off, 1 for on).
     ///
     /// # Examples
     ///
@@ -243,12 +278,21 @@ impl Request {
         unit_id: u8,
         address: u16,
         coils_number: u16,
-        values: Vec<u8>,
+        values: Vec<u8>
     ) -> Request {
         let function = Function::WriteMultipleCoils;
-        let request_body = WriteMultipleCoilsRequest::new(address, coils_number, values);
-        let head = Self::init_head(unit_id, function, request_body.len(), false);
-        Request::WriteMultipleCoils(head, request_body, None)
+        let request_body = WriteMultipleCoilsRequest::new(
+            address,
+            coils_number,
+            values
+        );
+        let head = Self::init_head(
+            unit_id,
+            function,
+            request_body.len(),
+            false
+        );
+        Request::WriteMultipleCoils(head, request_body)
     }
 
     /// Create a write multiple coils request (Function Code: 0x10)
@@ -271,16 +315,28 @@ impl Request {
         &self,
         unit_id: u8,
         address: u16,
-        values: Vec<u8>,
+        values: Vec<u8>
     ) -> Request {
         let function = Function::WriteMultipleHoldingRegisters;
-        let request_body = WriteMultipleHoldingRegistersRequest::new(address, values);
-        let head = Self::init_head(unit_id, function, request_body.len(), false);
-        Request::WriteMultipleHoldingRegisters(head, request_body, None)
+        let request_body = WriteMultipleHoldingRegistersRequest::new(
+            address, values
+        );
+        let head = Self::init_head(
+            unit_id,
+            function,
+            request_body.len(),
+            false
+        );
+        Request::WriteMultipleHoldingRegisters(head, request_body)
     }
 
     /// Build modbus message head
-    fn init_head(uid: u8, function: Function, body_length: u16, is_exception: bool) -> Head {
+    fn init_head(
+        uid: u8,
+        function: Function,
+        body_length: u16,
+        is_exception: bool
+    ) -> Head {
         // todo
         Head::new(
             Self::get_tid(uid),
@@ -288,7 +344,7 @@ impl Request {
             function,
             body_length,
             Version::Rtu,
-            is_exception,
+            is_exception
         )
     }
 
@@ -314,4 +370,53 @@ impl Request {
         // map.insert(unit_id, value);
         // value
     }
+}
+
+pub enum Response {
+    ReadCoils(
+        Head,
+        ReadCoilsRequest,
+        Result<ReadCoilsResponse, ExceptionResponse>
+    ),
+    ReadDiscreteInputs(
+        Head,
+        ReadDiscreteInputsRequest,
+        Result<ReadDiscreteInputsResponse, ExceptionResponse>
+    ),
+    ReadMultipleHoldingRegisters(
+        Head,
+        ReadMultipleHoldingRegistersRequest,
+        Result<
+            ReadMultipleHoldingRegistersResponse,
+            ExceptionResponse
+        >
+    ),
+    ReadInputRegisters(
+        Head,
+        ReadInputRegistersRequest,
+        Result<ReadInputRegistersResponse, ExceptionResponse>
+    ),
+    WriteSingleCoil(
+        Head,
+        WriteSingleCoilRequest,
+        Result<WriteSingleCoilResponse, ExceptionResponse>
+    ),
+    WriteSingleHoldingRegister(
+        Head,
+        WriteSingleHoldingRegisterRequest,
+        Result<WriteSingleHoldingRegisterResponse, ExceptionResponse>
+    ),
+    WriteMultipleCoils(
+        Head,
+        WriteMultipleCoilsRequest,
+        Result<WriteMultipleCoilsResponse, ExceptionResponse>
+    ),
+    WriteMultipleHoldingRegisters(
+        Head,
+        WriteMultipleHoldingRegistersRequest,
+        Result<
+            WriteMultipleHoldingRegistersResponse,
+            ExceptionResponse
+        >
+    )
 }

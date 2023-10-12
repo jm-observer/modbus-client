@@ -1,8 +1,7 @@
 use std::io::Error;
 
 use bytes::{BufMut, BytesMut};
-use easy_modbus::util::crc;
-use easy_modbus::Version::Rtu;
+use easy_modbus::{util::crc, Version::Rtu};
 use tokio_util::codec::Encoder;
 
 use crate::Request;
@@ -10,60 +9,55 @@ use crate::Request;
 impl Encoder<()> for Request {
     type Error = Error;
 
-    fn encode(&mut self, _item: (), dst: &mut BytesMut) -> std::result::Result<(), Self::Error> {
+    fn encode(
+        &mut self,
+        _item: (),
+        dst: &mut BytesMut
+    ) -> std::result::Result<(), Self::Error> {
         request_to_bytesmut(&self, dst);
         Ok(())
     }
 }
 
-// impl Encoder<&Request> for TcpCodec {
-//     type Error = Error;
-//
-//     fn encode(&mut self, item: &Request, dst: &mut BytesMut) -> Result<()> {
-//         request_to_bytesmut(item, dst);
-//         Ok(())
-//     }
-// }
-
 pub fn request_to_bytesmut(item: &Request, dst: &mut BytesMut) {
     let version;
     match item {
-        Request::ReadCoils(head, body, _) => {
+        Request::ReadCoils(head, body) => {
             version = head.version.clone();
             dst.put(BytesMut::from(head.clone()));
             dst.put(BytesMut::from(body.clone()));
-        }
-        Request::ReadDiscreteInputs(head, body, _) => {
+        },
+        Request::ReadDiscreteInputs(head, body) => {
             version = head.version.clone();
             dst.put(BytesMut::from(head.clone()));
             dst.put(BytesMut::from(body.clone()));
-        }
-        Request::ReadMultipleHoldingRegisters(head, body, _) => {
+        },
+        Request::ReadMultipleHoldingRegisters(head, body) => {
             version = head.version.clone();
             dst.put(BytesMut::from(head.clone()));
             dst.put(BytesMut::from(body.clone()));
-        }
-        Request::ReadInputRegisters(head, body, _) => {
+        },
+        Request::ReadInputRegisters(head, body) => {
             version = head.version.clone();
             dst.put(BytesMut::from(head.clone()));
             dst.put(BytesMut::from(body.clone()));
-        }
-        Request::WriteSingleCoil(head, body, _) => {
+        },
+        Request::WriteSingleCoil(head, body) => {
             version = head.version.clone();
             dst.put(BytesMut::from(head.clone()));
             dst.put(BytesMut::from(body.clone()));
-        }
-        Request::WriteSingleHoldingRegister(head, body, _) => {
+        },
+        Request::WriteSingleHoldingRegister(head, body) => {
             version = head.version.clone();
             dst.put(BytesMut::from(head.clone()));
             dst.put(BytesMut::from(body.clone()));
-        }
-        Request::WriteMultipleCoils(head, body, _) => {
+        },
+        Request::WriteMultipleCoils(head, body) => {
             version = head.version.clone();
             dst.put(BytesMut::from(head.clone()));
             dst.put(BytesMut::from(body.clone()));
-        }
-        Request::WriteMultipleHoldingRegisters(head, body, _) => {
+        },
+        Request::WriteMultipleHoldingRegisters(head, body) => {
             version = head.version.clone();
             dst.put(BytesMut::from(head.clone()));
             dst.put(BytesMut::from(body.clone()));
