@@ -13,8 +13,8 @@ bytes = "1.4.0"
 
 
 [patch.crates-io]
-easy-modbus = {path = "../my-easy-modbus"}
-
+#easy-modbus = {path = "../easy-modbus"}
+easy-modbus = {git ="https://github.com/jm-observer/easy-modbus.git"}
 
 [dev-dependencies]
 tokio = {version = "1.32.0", features = ["full"]}
