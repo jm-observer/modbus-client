@@ -10,3 +10,5 @@ pub struct TcpCodec;
 /// Mutual convert RTU Client frames and buffers.
 #[derive(Debug, Default)]
 pub struct RtuCodec;
+
+pub use encoder::*;

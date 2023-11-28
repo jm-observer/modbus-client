@@ -1,4 +1,7 @@
+use crate::codec::request_to_bytesmut;
+use bytes::BytesMut;
 use easy_modbus::*;
+
 mod codec;
 
 #[derive(Clone)]
@@ -34,6 +37,10 @@ impl Request {
             Request::WriteMultipleCoils(head, _) => head,
             Request::WriteMultipleHoldingRegisters(head, _) => head
         }
+    }
+
+    pub fn to_bytes(&self, data: &mut BytesMut) {
+        request_to_bytesmut(self, data)
     }
 
     /// Create a TCP frame
