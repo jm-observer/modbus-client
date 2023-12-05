@@ -18,8 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut transport = Framed::new(port, rq);
 
     transport.send(()).await?;
-    // 01 03 02 27 C5 63 E7
-    // 01 03 02 27 C5 63 E7
+    // 01 03 04 03 10 00 D7 BB EC
     while let Some(response) = transport.next().await {
         match response {
             Ok(response) => {
